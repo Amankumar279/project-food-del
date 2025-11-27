@@ -6,11 +6,13 @@ import axios from "axios";
 export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
+  const url = "https://project-food-del-backend.onrender.com";
+  const currency = "₹";
+  const deliveryCharge = 50;
+
+  const [food_list, setFoodList] = useState([]);
   const [cartItems, setCartItems] = useState({});
   const [token, setToken] = useState("");
-  const [food_list, setFoodList] = useState([]); // Initialize with an empty array
-
-  const url = "http://localhost:4000"; // Your backend URL
 
   const addToCart = async (itemId) => {
     if (!cartItems[itemId]) {
@@ -49,15 +51,27 @@ const StoreContextProvider = (props) => {
       const response = await axios.get(url + "/api/food/list");
       if (response.data.success) {
         setFoodList(response.data.data);
+      } else {
+        console.error("Failed to fetch food list");
       }
     } catch (error) {
       console.error("Error fetching food list:", error);
     }
   };
 
-  const loadCartData = async (token) => {
-    const response = await axios.post(url + "/api/cart/get", {}, { headers: { token } });
-    setCartItems(response.data.cartData);
+  const loadCartData = async (authToken) => {
+    try {
+      const response = await axios.post(
+        url + "/api/cart/get",
+        {},
+        {
+          headers: { token: authToken },
+        }
+      );
+      setCartItems(response.data.cartData);
+    } catch (error) {
+      console.error("Error loading cart data:", error);
+    }
   };
 
   // This useEffect hook runs once when the app loads
@@ -73,15 +87,18 @@ const StoreContextProvider = (props) => {
   }, []);
 
   const contextValue = {
+    url,
     food_list,
     cartItems,
-    setCartItems,
     addToCart,
     removeFromCart,
     getTotalCartAmount,
-    url,
     token,
     setToken,
+    loadCartData,
+    setCartItems,
+    currency,
+    deliveryCharge,
   };
 
   return (
