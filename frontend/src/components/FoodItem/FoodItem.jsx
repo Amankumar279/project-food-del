@@ -8,10 +8,15 @@ const FoodItem = ({ image, name, price, desc , id }) => {
     const [itemCount, setItemCount] = useState(0);
     const {cartItems,addToCart,removeFromCart,url,currency} = useContext(StoreContext);
 
+    // Check if image is already a full URL (Cloudinary) or needs backend path
+    const imageUrl = image && (image.startsWith('http://') || image.startsWith('https://')) 
+        ? image 
+        : `${url}/images/${image}`;
+
     return (
         <div className='food-item'>
             <div className='food-item-img-container'>
-                <img className='food-item-image' src={url+"/images/"+image} alt="" />
+                <img className='food-item-image' src={imageUrl} alt="" />
                 {!cartItems[id]
                 ?<img className='add' onClick={() => addToCart(id)} src={assets.add_icon_white} alt="" />
                 :<div className="food-item-counter">
