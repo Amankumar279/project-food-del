@@ -6,7 +6,8 @@ import axios from "axios";
 export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
-  const url = "https://project-food-del-backend.onrender.com";
+  // Base URL for your deployed backend
+  const url = "https://project-food-del.vercel.app";
   const currency = "₹";
   const deliveryCharge = 50;
 

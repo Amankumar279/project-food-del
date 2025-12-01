@@ -8,6 +8,10 @@ const FoodItem = ({ image, name, price, desc , id }) => {
     const [itemCount, setItemCount] = useState(0);
     const {cartItems,addToCart,removeFromCart,url,currency} = useContext(StoreContext);
 
+    // Ensure we always have a safe cart object
+    const safeCartItems = cartItems || {};
+    const quantity = safeCartItems[id] || 0;
+
     // Check if image is already a full URL (Cloudinary) or needs backend path
     const imageUrl = image && (image.startsWith('http://') || image.startsWith('https://')) 
         ? image 
@@ -17,12 +21,12 @@ const FoodItem = ({ image, name, price, desc , id }) => {
         <div className='food-item'>
             <div className='food-item-img-container'>
                 <img className='food-item-image' src={imageUrl} alt="" />
-                {!cartItems[id]
-                ?<img className='add' onClick={() => addToCart(id)} src={assets.add_icon_white} alt="" />
-                :<div className="food-item-counter">
-                        <img src={assets.remove_icon_red} onClick={()=>removeFromCart(id)} alt="" />
-                        <p>{cartItems[id]}</p>
-                        <img src={assets.add_icon_green} onClick={()=>addToCart(id)} alt="" />
+                {quantity === 0
+                    ? <img className='add' onClick={() => addToCart(id)} src={assets.add_icon_white} alt="" />
+                    : <div className="food-item-counter">
+                        <img src={assets.remove_icon_red} onClick={() => removeFromCart(id)} alt="" />
+                        <p>{quantity}</p>
+                        <img src={assets.add_icon_green} onClick={() => addToCart(id)} alt="" />
                     </div>
                 }
             </div>

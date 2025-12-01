@@ -32,15 +32,19 @@ const LoginPopup = ({ setShowLogin }) => {
         else {
             new_url += "/api/user/register"
         }
-        const response = await axios.post(new_url, data);
-        if (response.data.success) {
-            setToken(response.data.token)
-            localStorage.setItem("token", response.data.token)
-            loadCartData({token:response.data.token})
-            setShowLogin(false)
-        }
-        else {
-            toast.error(response.data.message)
+        try {
+            const response = await axios.post(new_url, data);
+            if (response.data.success) {
+                setToken(response.data.token);
+                localStorage.setItem("token", response.data.token);
+                // Pass the raw token string (StoreContext expects a string)
+                await loadCartData(response.data.token);
+                setShowLogin(false);
+            } else {
+                toast.error(response.data.message || "Login failed");
+            }
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Network error while logging in");
         }
     }
 
